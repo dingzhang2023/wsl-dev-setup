@@ -208,13 +208,13 @@
 
 #### Troubleshooting
 
-The above steps should work for most of the cases, if you still have issues, please try the following steps to troubleshoot:
+The above steps should work for most of the cases, if you still have issues, please try the **following steps to troubleshoot**:
 
 ```bash
 pip install --trusted-host files.pythonhosted.org --trusted-host pypi.org --trusted-host pypi.python.org <python-libary>
 ```
 
-install pandas
+**install pandas**
 
 ```bash
 pip install --trusted-host files.pythonhosted.org --trusted-host pypi.org --trusted-host pypi.python.org pandas
