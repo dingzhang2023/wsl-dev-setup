@@ -219,3 +219,92 @@ install pandas
 ```bash
 pip install --trusted-host files.pythonhosted.org --trusted-host pypi.org --trusted-host pypi.python.org pandas
 ```
+
+### Docker Installation Under WSL
+
+-   In WSL, install docker:
+
+```bash
+sudo apt update
+sudo apt install docker.io -y
+```
+
+-   Add your username to the docker group, to allow you to run docker
+
+```bash
+sudo usermod -aG docker $USER
+newgrp docker  # to ensure your group membership is updated in the current session
+```
+
+-   Check docker is working
+
+```bash
+docker --version
+```
+
+-   Output should be
+
+```bash
+Docker version 20.10.21, build 20.10.21-0ubuntu1~22.04.3
+```
+
+-   Check status of docker engine and client
+
+```bash
+docker info
+```
+
+-   Run a docker container and docker should pull the **hello-world** image automatically
+
+```bash
+docker run hello-world
+```
+
+-   Build docker image with avoiding **`Zscaler Certificate Issue`**
+
+    -   Copy your **zscaler.pem**(your Zscaler cert file) from **`/etc/ssl/certs/`** to your build context, aka, the current project base directory to avoid the Zscaler certificate issue during the building of docker image
+    -   Dockerfile example for Python and Nodejs
+
+    ```Dockerfile
+      # Use the official Python 3.10 image as the base image
+      FROM python:3.10
+
+      # Set the working directory inside the container
+      WORKDIR /app
+
+      # Copy the CA certificate file from the host to the container
+      COPY zscaler.pem /app/
+
+      # Set the environment variable to specify the CA certificate file for python
+      ENV REQUESTS_CA_BUNDLE /app/zscaler.pem
+
+      # Set the environment variable to specify the CA certificate file for nodejs
+      ENV NODE_EXTRA_CA_CERTS /app/zscaler.pem
+
+      # Create a virtual environment avoid running as root user
+      RUN python -m venv /venv
+
+      # Add the virtual environment's binary directory to the PATH
+      ENV PATH="/venv/bin:$PATH"
+
+      # Activate the virtual environment
+      RUN . /venv/bin/activate
+
+      # Install pip upgrade
+      RUN pip install --upgrade pip
+
+      # Copy the requirements.txt file
+      COPY requirements.txt /app
+
+      # Install any required dependencies
+      RUN pip install -r requirements.txt
+
+      # Set the CMD to activate the virtual environment
+      CMD ["/bin/bash", "-c", "source /venv/bin/activate"]
+    ```
+
+    -   Run docker build
+
+    ```bash
+    docker build -t image_name .
+    ```
